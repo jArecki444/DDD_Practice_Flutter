@@ -1,3 +1,5 @@
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
 import 'package:ddd_practice_flutter/domain/auth/auth_failure.dart';
@@ -14,75 +16,79 @@ part 'sign_in_form_bloc.freezed.dart';
 class SignInFormBloc extends Bloc<SignInFormEvent, SignInFormState> {
   final IAuthFacade _authFacade;
 
-  SignInFormBloc(this._authFacade) : super(SignInFormState.initial());
-
-  @override
-  Stream<SignInFormState> mapEventToState(
-    SignInFormEvent event,
-  ) async* {
-    yield* event.map(
-      emailChanged: (e) async* {
-        yield state.copyWith(
-          emailAddress: EmailAddress(e.email),
-          authFailureOrSuccessOption: none(),
-        );
-      },
-      passwordChanged: (e) async* {
-        yield state.copyWith(
-          password: Password(e.password),
-          authFailureOrSuccessOption: none(),
-        );
-      },
-      registerPressed: (e) async* {
-        yield* _performActionOnAuthFacadeWithEmailAndPassword(
-          _authFacade.registerWithEmailAndPassword,
-        );
-      },
-      signInPressed: (e) async* {
-        yield* _performActionOnAuthFacadeWithEmailAndPassword(
-          _authFacade.signInWithEmailAndPassword,
-        );
-      },
-      signInWithGooglePressed: (e) async* {
-        yield state.copyWith(
+  SignInFormBloc(this._authFacade) : super(SignInFormState.initial()) {
+    on<_EmailChanged>(
+      (event, emit) => emit(
+        state.copyWith(
+            emailAddress: EmailAddress(event.email),
+            authFailureOrSuccessOption: none()),
+      ),
+    );
+    on<_PasswordChanged>(
+      (event, emit) => emit(
+        state.copyWith(
+            password: Password(event.password),
+            authFailureOrSuccessOption: none()),
+      ),
+    );
+    on<_SignInPressed>(
+      (event, emit) => _performActionOnAuthFacadeWithEmailAndPassword(
+        _authFacade.signInWithEmailAndPassword,
+      ),
+    );
+    on<_RegisterPressed>(
+      (event, emit) => _performActionOnAuthFacadeWithEmailAndPassword(
+        _authFacade.registerWithEmailAndPassword,
+      ),
+    );
+    on<_SignInWithGooglePressed>((event, emit) async {
+      emit(
+        state.copyWith(
           isSubmitting: true,
           authFailureOrSuccessOption: none(),
-        );
-        final failureOrSuccess = await _authFacade.signInWithGoogle();
-        yield state.copyWith(
+        ),
+      );
+
+      final failureOrSuccess = await _authFacade.signInWithGoogle();
+      emit(
+        state.copyWith(
           isSubmitting: false,
           authFailureOrSuccessOption: some(failureOrSuccess),
-        );
-      },
-    );
+        ),
+      );
+    });
   }
 
-  Stream<SignInFormState> _performActionOnAuthFacadeWithEmailAndPassword(
+  _performActionOnAuthFacadeWithEmailAndPassword(
     Future<Either<AuthFailure, Unit>> Function({
       required EmailAddress emailAddress,
       required Password password,
     })
         forwardedCall,
-  ) async* {
+  ) async {
     Either<AuthFailure, Unit>? failureOrSuccess;
     final isEmailValid = state.emailAddress.isValid();
     final isPasswordValid = state.password.isValid();
     if (isEmailValid && isPasswordValid) {
-      yield state.copyWith(
-        isSubmitting: true,
-        authFailureOrSuccessOption: none(),
+      emit(
+        state.copyWith(
+          isSubmitting: true,
+          authFailureOrSuccessOption: none(),
+        ),
       );
       failureOrSuccess = await forwardedCall(
         emailAddress: state.emailAddress,
         password: state.password,
       );
     }
-    yield state.copyWith(
-      isSubmitting: false,
-      showErrorMessages: true,
-      // The bottom line (optionOf) equivalent is:
-      // failureOrSuccess != null ? some(failureOrSuccess) : none()
-      authFailureOrSuccessOption: optionOf(failureOrSuccess),
+    emit(
+      state.copyWith(
+        isSubmitting: false,
+        useValidation: true,
+        // The bottom line (optionOf) equivalent is:
+        // failureOrSuccess != null ? some(failureOrSuccess) : none()
+        authFailureOrSuccessOption: optionOf(failureOrSuccess),
+      ),
     );
   }
 }
