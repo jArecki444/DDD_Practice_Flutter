@@ -1,15 +1,17 @@
 import 'package:ddd_practice_flutter/domain/auth/auth_failure.dart';
 import 'package:dartz/dartz.dart';
 import 'package:ddd_practice_flutter/domain/auth/i_auth_facade.dart';
+import 'package:ddd_practice_flutter/domain/auth/user.dart';
 import 'package:ddd_practice_flutter/domain/auth/value_objects.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebaseAuth;
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:injectable/injectable.dart';
+import './firebase_user_mapper.dart';
 
 @LazySingleton(as: IAuthFacade)
 class FirebaseAuthFacade implements IAuthFacade {
-  final FirebaseAuth _firebaseAuth;
+  final firebaseAuth.FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
 
   FirebaseAuthFacade(this._firebaseAuth, this._googleSignIn);
@@ -49,7 +51,7 @@ class FirebaseAuthFacade implements IAuthFacade {
         password: passwordStr,
       );
       return right(unit);
-    } on FirebaseAuthException catch (e) {
+    } on firebaseAuth.FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found' || e.code == 'wrong-password') {
         return left(
           const AuthFailure.invalidEmailAndPasswordCombination(),
@@ -70,7 +72,7 @@ class FirebaseAuthFacade implements IAuthFacade {
         return left(const AuthFailure.cancelledByUser());
       }
       final googleAuthentication = await googleUser.authentication;
-      final credential = GoogleAuthProvider.credential(
+      final credential = firebaseAuth.GoogleAuthProvider.credential(
         accessToken: googleAuthentication.accessToken,
         idToken: googleAuthentication.idToken,
       );
@@ -81,4 +83,14 @@ class FirebaseAuthFacade implements IAuthFacade {
       return left(const AuthFailure.serverError());
     }
   }
+
+  @override
+  Future<Option<User>> getSignedInUser() async =>
+      optionOf(_firebaseAuth.currentUser?.toDomain());
+
+  @override
+  Future<void> signOut() => Future.wait([
+        _firebaseAuth.signOut(),
+        _googleSignIn.signOut(),
+      ]);
 }
