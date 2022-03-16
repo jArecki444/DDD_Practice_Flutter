@@ -26,7 +26,7 @@ class SignInForm extends StatelessWidget {
             ).show(context),
             (r) => Flushbar(
               message: 'Success',
-              duration: Duration(seconds: 2),
+              duration: const Duration(seconds: 2),
             )..show(context),
           ),
         );
@@ -89,6 +89,10 @@ class SignInForm extends StatelessWidget {
                             ),
                       ),
                     ),
+                    Visibility(
+                      visible: state.isSubmitting,
+                      child: const CircularProgressIndicator(),
+                    ),
                     Expanded(
                       child: TextButton(
                         child: const Text('Register'),
@@ -104,7 +108,7 @@ class SignInForm extends StatelessWidget {
                   onPressed: () => context.read<SignInFormBloc>().add(
                         const SignInFormEvent.signInWithGooglePressed(),
                       ),
-                  child: Text('Sign in with Google'),
+                  child: const Text('Sign in with Google'),
                 ),
               ],
             ),
