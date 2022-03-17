@@ -52,7 +52,10 @@ abstract class NoteDto implements _$NoteDto {
   factory NoteDto.fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {
     return doc.data() == null
         ? NoteDto.fromDomain(
-            Note.empty().copyWith(body: NoteBody("Firestore error")))
+            Note.empty().copyWith(
+              body: NoteBody("Firestore error"),
+            ),
+          )
         : NoteDto.fromJson(doc.data()!).copyWith(id: doc.id);
   }
 }
