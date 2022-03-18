@@ -1,7 +1,10 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:another_flushbar/flushbar_helper.dart';
+import 'package:ddd_practice_flutter/domain/auth/bloc/auth_bloc.dart';
+import 'package:ddd_practice_flutter/presentation/routes/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:auto_route/auto_route.dart';
 
 import 'package:ddd_practice_flutter/application/sign_in_form/bloc/sign_in_form_bloc.dart';
 
@@ -24,10 +27,12 @@ class SignInForm extends StatelessWidget {
                     'Invalid email and password combination',
               ),
             ).show(context),
-            (r) => Flushbar(
-              message: 'Success',
-              duration: const Duration(seconds: 2),
-            )..show(context),
+            (r) {
+              context.router.replace(const NotesOverviewRoute());
+              context
+                  .read<AuthBloc>()
+                  .add(const AuthEvent.authCheckRequested());
+            },
           ),
         );
       },
