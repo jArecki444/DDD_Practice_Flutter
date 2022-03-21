@@ -43,6 +43,9 @@ class NoteRepository implements INoteRepository {
         );
       }
     });
+    // yield left(
+    //   const NoteFailure.insufficientPermissions(),
+    // );
   }
 
   @override
@@ -96,7 +99,7 @@ class NoteRepository implements INoteRepository {
     }
   }
 
-   @override
+  @override
   Future<Either<NoteFailure, Unit>> update(Note note) async {
     try {
       final userDoc = await _firestore.userDocument();
