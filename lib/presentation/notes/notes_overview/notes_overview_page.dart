@@ -74,7 +74,8 @@ class NotesOverviewPage extends StatelessWidget {
           ),
           body: const NotesOverviewBody(),
           floatingActionButton: FloatingActionButton(
-            child: const Icon(Icons.add),
+            child: const Icon(Icons.add,),
+            backgroundColor: Colors.green,
             onPressed: () {},
           ),
         ),
