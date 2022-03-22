@@ -74,7 +74,11 @@ class NotesOverviewPage extends StatelessWidget {
               Icons.add,
             ),
             backgroundColor: Colors.green,
-            onPressed: () {},
+            onPressed: () {
+              context.router.push(
+                NoteFormRoute(editedNote: null),
+              );
+            },
           ),
         ),
       ),
