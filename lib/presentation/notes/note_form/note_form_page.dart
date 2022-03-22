@@ -4,6 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:ddd_practice_flutter/domain/notes/note.dart';
 import 'package:ddd_practice_flutter/injection.dart';
 import 'package:ddd_practice_flutter/presentation/notes/note_form/widgets/body_field_widget.dart';
+import 'package:ddd_practice_flutter/presentation/notes/note_form/widgets/color_field_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -126,8 +127,9 @@ class NoteFormPageScaffold extends StatelessWidget {
                 : AutovalidateMode.disabled,
             child: SingleChildScrollView(
               child: Column(
-                children: [
-                  const BodyField()
+                children: const [
+                  ColorField(),
+                  BodyField(),
                 ],
               ),
             ),
