@@ -3,6 +3,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:dartz/dartz.dart';
 import 'package:ddd_practice_flutter/domain/notes/note.dart';
 import 'package:ddd_practice_flutter/injection.dart';
+import 'package:ddd_practice_flutter/presentation/notes/note_form/widgets/body_field_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -116,7 +117,23 @@ class NoteFormPageScaffold extends StatelessWidget {
           ),
         ],
       ),
-      body: const Text('Note Form page'),
+      body: BlocBuilder<NoteFormBloc, NoteFormState>(
+        buildWhen: (p, c) => p.showErrorMessages != c.showErrorMessages,
+        builder: (context, state) {
+          return Form(
+            autovalidateMode: state.showErrorMessages
+                ? AutovalidateMode.always
+                : AutovalidateMode.disabled,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const BodyField()
+                ],
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }

@@ -22,7 +22,7 @@ class NoteCard extends StatelessWidget {
       child: InkWell(
         onTap: () {
           context.router.push(
-            NoteFormRoute(editedNote: null),
+            NoteFormRoute(editedNote: note),
           );
         },
         onLongPress: () {
