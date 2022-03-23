@@ -43,6 +43,7 @@ dependencies:
   freezed_annotation: null
   get_it: ^7.2.0
   google_sign_in: ^5.2.4
+  implicitly_animated_reorderable_list: ^0.4.2
   injectable: ^1.5.3
   injectable_generator: ^1.5.3
   json_annotation: ^4.4.0
